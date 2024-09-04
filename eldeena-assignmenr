@@ -1,0 +1,134 @@
+# -*- coding: utf-8 -*-
+"""
+# [Group_3]
+
+Group Members: 
+1. 1211111904 Eldeena Lim Huey Yinn
+2. 1211109457 Do Wai Lung
+3. 1221305730 Doris Heng
+4. 1211108301 Kong Yi Xuan
+
+"""
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+#QUESTION 1
+
+airbnb_df = pd.read_csv("AB_NYC_2019.csv")
+print(airbnb_df.isna().sum())
+airbnb_df = airbnb_df.dropna(subset=["name", "host_name"])
+airbnb_df["last_review"] = airbnb_df["last_review"].fillna("None")
+airbnb_df["reviews_per_month"] = airbnb_df["reviews_per_month"].fillna(0)
+print(airbnb_df)
+
+#QUESTION 2
+
+plt.figure(figsize=(16,5))
+plt.subplot(1,1,1)
+sns.distplot(airbnb_df['price'])
+plt.show()
+
+airbnb_hist = sns.boxplot(x = airbnb_df['price'])
+airbnb_hist.set_title('Price of Airbnb in NYC')
+airbnb_hist.set_xlabel('Price')
+airbnb_hist.set_ylabel('Count')
+
+avg_price = airbnb_df["price"].mean()
+print("Average Price:", avg_price)
+
+percentile25 = airbnb_df['price'].quantile(0.25)
+percentile75 = airbnb_df['price'].quantile(0.75)
+print("Q1:", percentile25)
+print("Q3:", percentile75)
+
+iqr=percentile75-percentile25
+print("Interquartile range:",iqr)
+
+upper_limit = percentile75 + 1.5 * iqr
+lower_limit = percentile25 - 1.5 * iqr
+print("Upper limit:",upper_limit)
+print("Lower limit:",lower_limit)
+
+airbnb_df[airbnb_df['price'] >upper_limit] 
+airbnb_df[airbnb_df['price'] < lower_limit]
+
+new_df = airbnb_df[airbnb_df['price'] < upper_limit]
+new_df = sns.boxplot(x = new_df['price'])
+new_df.set_title('Price of Airbnb in NYC')
+new_df.set_xlabel('Price')
+new_df.set_ylabel('Count')
+
+plt.figure(figsize=(16,5))
+plt.subplot(1,1,1)
+sns.distplot(airbnb_df['reviews_per_month'])
+plt.show()
+
+airbnb_hist = sns.boxplot(x = airbnb_df['reviews_per_month'])
+airbnb_hist.set_title('Reviews of Airbnb in NYC')
+airbnb_hist.set_xlabel('Reviews Per Month')
+airbnb_hist.set_ylabel('Count')
+
+avg_price = airbnb_df["reviews_per_month"].mean()
+print("Average Reviews Per Month:", avg_price)
+
+percentile25 = airbnb_df['reviews_per_month'].quantile(0.25)
+percentile75 = airbnb_df['reviews_per_month'].quantile(0.75)
+print("Q1:", percentile25)
+print("Q3:", percentile75)
+
+iqr=percentile75-percentile25
+print("Interquartile range:",iqr)
+
+upper_limit = percentile75 + 1.5 * iqr
+lower_limit = percentile25 - 1.5 * iqr
+print("Upper limit:",upper_limit)
+print("Lower limit:",lower_limit)
+
+airbnb_df[airbnb_df['reviews_per_month'] >upper_limit] 
+airbnb_df[airbnb_df['reviews_per_month'] < lower_limit]
+
+new_df = airbnb_df[airbnb_df['reviews_per_month'] < upper_limit]
+new_df = sns.boxplot(x = new_df['reviews_per_month'])
+new_df.set_title('Review of Airbnb in NYC')
+new_df.set_xlabel('Review')
+new_df.set_ylabel('Count')
+
+airbnb_df = pd.read_csv("AB_NYC_2019.csv")
+airbnb_df.plot.scatter(x = "price", y = "reviews_per_month", c = "darkblue")
+
+#QUESTION 3
+
+condition1 = airbnb_df["neighbourhood_group"] == "Manhattan"
+condition2 = airbnb_df["room_type"] == "Private room"
+data_sub1 = airbnb_df[condition1 & condition2]
+print(data_sub1)
+
+data_sub1 = data_sub1[data_sub1["minimum_nights"] >= 3]
+data_sub1.sort_values(by =["price"])
+
+data_sub2 = airbnb_df.groupby(["neighbourhood_group","room_type"])
+data_sub2.price.mean().reset_index()
+
+airbnb_df['high_demand area'] = airbnb_df['availability_365'] > 300
+airbnb_df['revenue'] = airbnb_df['price'] * airbnb_df['minimum_nights']
+print (airbnb_df)
+
+max_price = airbnb_df["price"].max()
+print("Max:",max_price)
+min_price = airbnb_df["price"].min()
+print("Min:",min_price)
+
+bins = [0, 100, 500, 1000]
+categories = ["budget","moderate","expensive"]
+airbnb_df['price_category'] = pd.cut(airbnb_df['price'], bins, labels=categories)
+print(airbnb_df)
+
+sum_stat = airbnb_df.groupby(["neighbourhood_group","room_type"])
+sum_stat = sum_stat["price"].describe()
+print(sum_stat)
+
+avg_avail = airbnb_df.groupby('neighbourhood_group')
+avg_avail = avg_avail['availability_365'].mean().reset_index()
+print(avg_avail)
