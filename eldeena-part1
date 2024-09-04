@@ -19,8 +19,8 @@ import matplotlib.pyplot as plt
 airbnb_df = pd.read_csv("AB_NYC_2019.csv")
 print(airbnb_df.isna().sum())
 airbnb_df = airbnb_df.dropna(subset=["name", "host_name"])
-airbnb_df["last_review"] = airbnb_df["last_review"].fillna("None")
-airbnb_df["reviews_per_month"] = airbnb_df["reviews_per_month"].fillna(0)
+#Missing values of Last Review column is more than 20%
+airbnb_df.drop(columns = 'last_review', inplace = True)
 print(airbnb_df)
 
 #QUESTION 2
@@ -70,8 +70,8 @@ airbnb_hist.set_title('Reviews of Airbnb in NYC')
 airbnb_hist.set_xlabel('Reviews Per Month')
 airbnb_hist.set_ylabel('Count')
 
-avg_price = airbnb_df["reviews_per_month"].mean()
-print("Average Reviews Per Month:", avg_price)
+avg_review = airbnb_df["reviews_per_month"].mean()
+print("Average Reviews Per Month:", avg_review)
 
 percentile25 = airbnb_df['reviews_per_month'].quantile(0.25)
 percentile75 = airbnb_df['reviews_per_month'].quantile(0.75)
