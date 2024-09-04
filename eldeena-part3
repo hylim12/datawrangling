@@ -1,0 +1,39 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#try to make the graph of 1 numerical value based on different types of 1 attribute
+#maybe like price of private rooms or entire home/apt
+
+#PRICE OF HISTOGRAM FOR TYPE OF ROOMS - x=type of rooms, y= price
+airbnb_df = pd.read_csv("AB_NYC_2019.csv")
+airbnb_df = airbnb_df.dropna(subset=["name", "host_name"])
+airbnb_df["last_review"] = airbnb_df["last_review"].fillna("None")
+airbnb_df["reviews_per_month"] = airbnb_df["reviews_per_month"].fillna(0)
+
+brooklyn_prices = airbnb_df[airbnb_df['neighbourhood_group'] == 'Brooklyn']['price']
+manhattan_prices = airbnb_df[airbnb_df['neighbourhood_group'] == 'Manhattan']['price']
+"""
+avg_price = airbnb_df["price"].mean()
+percentile25 = airbnb_df['price'].quantile(0.25)
+percentile75 = airbnb_df['price'].quantile(0.75)
+iqr=percentile75-percentile25
+upper_limit = percentile75 + 1.5 * iqr
+lower_limit = percentile25 - 1.5 * iqr
+"""
+# Plot histogram for Brooklyn prices
+#brooklyn_prices = brooklyn_prices[airbnb_df['price'] < upper_limit]
+plt.figure(figsize=(10, 6))
+brooklyn_prices.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
+plt.title('Distribution of Prices for Houses in Brooklyn')
+plt.xlabel('Price')
+plt.ylabel('Frequency')
+plt.show()
+
+# Plot histogram for Manhattan prices
+#manhattan_prices = manhattan_prices[airbnb_df['price'] < upper_limit]
+plt.figure(figsize=(10, 6))
+manhattan_prices.plot(kind='hist', bins=30, color='pink', edgecolor='black')
+plt.title('Distribution of Prices for Houses in Manhattan')
+plt.xlabel('Price')
+plt.ylabel('Frequency')
+plt.show()
