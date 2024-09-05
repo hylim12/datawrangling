@@ -30,73 +30,61 @@ plt.subplot(1,1,1)
 sns.distplot(airbnb_df['price'])
 plt.show()
 
-airbnb_hist = sns.boxplot(x = airbnb_df['price'])
-airbnb_hist.set_title('Price of Airbnb in NYC')
-airbnb_hist.set_xlabel('Price')
-airbnb_hist.set_ylabel('Count')
-
-avg_price = airbnb_df["price"].mean()
-print("Average Price:", avg_price)
-
-percentile25 = airbnb_df['price'].quantile(0.25)
-percentile75 = airbnb_df['price'].quantile(0.75)
-print("Q1:", percentile25)
-print("Q3:", percentile75)
-
-iqr=percentile75-percentile25
-print("Interquartile range:",iqr)
-
-upper_limit = percentile75 + 1.5 * iqr
-lower_limit = percentile25 - 1.5 * iqr
-print("Upper limit:",upper_limit)
-print("Lower limit:",lower_limit)
-
-airbnb_df[airbnb_df['price'] >upper_limit] 
-airbnb_df[airbnb_df['price'] < lower_limit]
-
-new_df = airbnb_df[airbnb_df['price'] < upper_limit]
-new_df = sns.boxplot(x = new_df['price'])
-new_df.set_title('Price of Airbnb in NYC')
-new_df.set_xlabel('Price')
-new_df.set_ylabel('Count')
-
 plt.figure(figsize=(16,5))
 plt.subplot(1,1,1)
 sns.distplot(airbnb_df['reviews_per_month'])
 plt.show()
 
-airbnb_hist = sns.boxplot(x = airbnb_df['reviews_per_month'])
-airbnb_hist.set_title('Reviews of Airbnb in NYC')
-airbnb_hist.set_xlabel('Reviews Per Month')
-airbnb_hist.set_ylabel('Count')
+price_hist = sns.boxplot(x = airbnb_df['price'])
+price_hist.set_title('Price of Airbnb in NYC')
+price_hist.set_xlabel('Price')
+price_hist.set_ylabel('Count')
 
-avg_review = airbnb_df["reviews_per_month"].mean()
-print("Average Reviews Per Month:", avg_review)
+reviews_hist = sns.boxplot(x = airbnb_df['reviews_per_month'])
+reviews_hist.set_title('Reviews of Airbnb in NYC')
+reviews_hist.set_xlabel('Reviews Per Month')
+reviews_hist.set_ylabel('Count')
 
-percentile25 = airbnb_df['reviews_per_month'].quantile(0.25)
-percentile75 = airbnb_df['reviews_per_month'].quantile(0.75)
-print("Q1:", percentile25)
-print("Q3:", percentile75)
-
-iqr=percentile75-percentile25
-print("Interquartile range:",iqr)
-
-upper_limit = percentile75 + 1.5 * iqr
-lower_limit = percentile25 - 1.5 * iqr
-print("Upper limit:",upper_limit)
-print("Lower limit:",lower_limit)
-
-airbnb_df[airbnb_df['reviews_per_month'] >upper_limit] 
-airbnb_df[airbnb_df['reviews_per_month'] < lower_limit]
-
-new_df = airbnb_df[airbnb_df['reviews_per_month'] < upper_limit]
-new_df = sns.boxplot(x = new_df['reviews_per_month'])
-new_df.set_title('Review of Airbnb in NYC')
-new_df.set_xlabel('Review')
-new_df.set_ylabel('Count')
-
-airbnb_df = pd.read_csv("AB_NYC_2019.csv")
 airbnb_df.plot.scatter(x = "price", y = "reviews_per_month", c = "darkblue")
+
+# List of columns to iterate over
+columns = ['price', 'reviews_per_month','minimum_nights','availability_365']
+
+# Loop through each column to create separate boxplots
+for column in columns:
+    # Calculate the average
+    avg_value = airbnb_df[column].mean()
+    print(f"Average {column.capitalize()}: {avg_value}")
+
+    # Calculate Q1, Q3, and IQR
+    percentile25 = airbnb_df[column].quantile(0.25)
+    percentile75 = airbnb_df[column].quantile(0.75)
+    print(f"Q1 ({column.capitalize()}):", percentile25)
+    print(f"Q3 ({column.capitalize()}):", percentile75)
+
+    iqr = percentile75 - percentile25
+    print(f"Interquartile range ({column.capitalize()}):", iqr)
+
+    # Calculate upper and lower limits
+    upper_limit = percentile75 + 1.5 * iqr
+    lower_limit = percentile25 - 1.5 * iqr
+    print(f"Upper limit ({column.capitalize()}):", upper_limit)
+    print(f"Lower limit ({column.capitalize()}):", lower_limit)
+
+    # Filter data within upper limit
+    filtered_df = airbnb_df[airbnb_df[column] < upper_limit]
+
+    # Create a new figure for each column
+    plt.figure()
+    
+    # Create a boxplot for the current column
+    boxplot = sns.boxplot(x=filtered_df[column])
+    boxplot.set_title(f'{column.capitalize()} of Airbnb in NYC')
+    boxplot.set_xlabel(column.capitalize())
+    boxplot.set_ylabel('Count')
+    
+    # Show the plot
+    plt.show()
 
 #QUESTION 3
 
