@@ -21,6 +21,7 @@ print(airbnb_df.isna().sum())
 airbnb_df = airbnb_df.dropna(subset=["name", "host_name"])
 #Missing values of Last Review column is more than 20%
 airbnb_df.drop(columns = 'last_review', inplace = True)
+airbnb_df["reviews_per_month"].fillna(0, inplace = True)
 print(airbnb_df)
 
 #QUESTION 2
