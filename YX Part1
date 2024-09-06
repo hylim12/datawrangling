@@ -1,0 +1,112 @@
+import numpy as np
+import pandas as pd
+
+#identify the column with missing values 
+df = pd.read_csv("AB_NYC_2019.csv")
+print(df.isna().sum())
+
+#drop the column with high missing values
+df.drop(['last_review'], axis=1, inplace=True)
+
+# Replace NaN values with 0
+df['reviews_per_month'] = df['reviews_per_month'].fillna(0)
+df
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import pandas as pd
+
+#calculation for price
+average_price = df['price'].mean()
+print("Average Price:", average_price)
+
+Q1 = df['price'].quantile(0.25)
+Q3 = df['price'].quantile(0.75)
+IQR = Q3 - Q1
+
+print("Lower Quantile:", Q1)
+print("Upper Quantile:", Q3)
+print("Interquantile Range:", IQR)
+
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
+
+print("Lower Limit:", lower_limit)
+print("Upper Limit:", upper_limit)
+print()
+
+#calculation for number of reviews
+average_reviews = df['number_of_reviews'].mean()
+print("Average Number of Reviews:", average_reviews)
+
+Q1 = df['number_of_reviews'].quantile(0.25)
+Q3 = df['number_of_reviews'].quantile(0.75)
+IQR = Q3 - Q1
+
+print("Lower Quantile:", Q1)
+print("Upper Quantile:", Q3)
+print("Interquantile Range:", IQR)
+
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
+
+print("Lower Limit:", lower_limit)
+print("Upper Limit:", upper_limit)
+print()
+
+#Create boxplot for price
+price_box = sns.boxplot(x = df['price'])
+price_box.set_title('Box Plot of Price')
+price_box.set_xlabel('Price')
+price_box.set_ylabel('Frequency')
+
+#boxplot for number of review
+num_of_reviews_box = sns.boxplot(x = df['number_of_reviews'])
+num_of_reviews_box.set_title('Box Plot of Number of Review')
+num_of_reviews_box.set_xlabel('Number of Reviews')
+num_of_reviews_box.set_ylabel('Frequency')
+
+#scatter plot to show relationship between price and number of reviews
+df.plot.scatter(x = "price", y = "number_of_reviews", c = "green")
+plt.title('Price VS Number of Reviews')
+plt.xlabel('Price')
+plt.ylabel('Number of Reviews')
+
+#3. Data Transformation
+data_sub1 = df[df['neighbourhood_group']=='Manhattan']
+data_sub1
+
+data_sub1_filtered = data_sub1[data_sub1['minimum_nights'] >= 3]
+data_sub1_sorted = data_sub1_filtered.sort_values(by='price')
+data_sub1_sorted
+
+data_sub2 = df.groupby(['neighbourhood_group', 'room_type'], as_index=False).agg({'price': 'mean'})
+data_sub2.rename(columns={'price': 'average_price'}, inplace=True)
+data_sub2
+
+df['high_demand_area'] = df['availability_365'] > 300
+df['revenue'] = df['price'] * df['minimum_nights']
+
+print("Updated DataFrame with high-demand indicator and revenue:")
+df
+
+#define bin edges and labels
+bins = [0, 100, 200, float('inf')]  
+labels = ['Budget', 'Moderate', 'Expensive'] 
+
+# Create a new column 'price_category' 
+df['price_category'] = pd.cut(df['price'], bins=bins, labels=labels, right=False)
+df
+
+summary_stats = df.groupby(['neighbourhood_group', 'room_type']).agg(
+    mean_price=('price', 'mean'),
+    median_price=('price', 'median')
+).reset_index()
+
+print("\nSummary Statistics for 'price':")
+print(summary_stats)
+
+data_sub3 = df.groupby(['neighbourhood_group'], as_index=False).agg({'availability_365': 'mean'})
+data_sub3.rename(columns={'availability_365': 'average_availability'}, inplace=True)
+data_sub3
