@@ -89,35 +89,35 @@ for column in columns:
 
 #QUESTION 3
 
-condition1 = airbnb_df["neighbourhood_group"] == "Manhattan"
-condition2 = airbnb_df["room_type"] == "Private room"
-data_sub1 = airbnb_df[condition1 & condition2]
+condition1 = filtered_df["neighbourhood_group"] == "Manhattan"
+condition2 = filtered_df["room_type"] == "Private room"
+data_sub1 = filtered_df[condition1 & condition2]
 print(data_sub1)
 
 data_sub1 = data_sub1[data_sub1["minimum_nights"] >= 3]
 data_sub1.sort_values(by =["price"])
 
-data_sub2 = airbnb_df.groupby(["neighbourhood_group","room_type"])
+data_sub2 = filtered_df.groupby(["neighbourhood_group","room_type"])
 data_sub2.price.mean().reset_index()
 
-airbnb_df['high_demand area'] = airbnb_df['availability_365'] > 300
-airbnb_df['revenue'] = airbnb_df['price'] * airbnb_df['minimum_nights']
-print (airbnb_df)
+filtered_df['high_demand area'] = filtered_df['availability_365'] > 300
+filtered_df['revenue'] = filtered_df['price'] * filtered_df['minimum_nights']
+filtered_df
 
-max_price = airbnb_df["price"].max()
+max_price = filtered_df["price"].max()
 print("Max:",max_price)
-min_price = airbnb_df["price"].min()
+min_price = filtered_df["price"].min()
 print("Min:",min_price)
 
 bins = [0, 100, 500, 1000]
 categories = ["budget","moderate","expensive"]
-airbnb_df['price_category'] = pd.cut(airbnb_df['price'], bins, labels=categories)
-print(airbnb_df)
+filtered_df['price_category'] = pd.cut(filtered_df['price'], bins, labels=categories)
+filtered_df
 
-sum_stat = airbnb_df.groupby(["neighbourhood_group","room_type"])
+sum_stat = filtered_df.groupby(["neighbourhood_group","room_type"])
 sum_stat = sum_stat["price"].describe()
-print(sum_stat)
+sum_stat
 
-avg_avail = airbnb_df.groupby('neighbourhood_group')
+avg_avail = filtered_df.groupby('neighbourhood_group')
 avg_avail = avg_avail['availability_365'].mean().reset_index()
 print(avg_avail)
