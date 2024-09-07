@@ -1,0 +1,127 @@
+import numpy as np
+import pandas as pd
+
+# 1. Load the dataset into a data frame using Pandas.
+#read the dataframe
+df = pd.read_csv("melb_data.csv")
+
+# 2. Explore the number of rows and columns, ranges of values, etc.# Specify the column name
+# Display the dataframe and numbers of rows and columns
+df 
+
+# Explore the new values for numeric columns
+# Specify the column name
+columns = ['Price', 'Distance', 'Landsize']
+
+# Calculate the range of values for the specific column
+for column in columns:
+    column_range = df[column].max() - df[column].min()
+    
+    # Calculate and display the range
+    print(f"The minimum value of {column} is:", df[column].min())
+    print(f"The maximum value of {column} is:", df[column].max())
+    print(f"The range of {column} is:", column_range)
+    print()
+
+    # Calculate and diplay the mean, Q1, Q3, IQR, lower and Upper Limit 
+    print(f"The average value of {column} is:", df[column].mean())
+    
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    print(f"The lower quantile of {column} is:", Q1)
+    print(f"The upper quantile of {column} is:", Q3)
+    print(f"The interquantile of {column} is:", IQR)
+    
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+    
+    print(f"The lower limit of {column} is:", lower_limit)
+    print(f"The upper limit of {column} is:", upper_limit)
+    print()
+
+#Create boxplot for specific columns
+columns = ['Price', 'Distance', 'Landsize']
+
+for column in columns:
+    plt.figure()  # Create a new figure for each plot
+    boxplot = sns.boxplot(x=df[column])
+    boxplot.set_title(f"Box Plot of {column}")
+    boxplot.set_xlabel(column)
+    boxplot.set_ylabel('Count')
+    
+    # Display the plot
+    plt.show()
+
+# Scatter plot to show the relationship between price and landsize
+df.plot.scatter(x = "Price", y = "Landsize", c = "green")
+plt.title('Price VS Landsize')
+plt.xlabel('Price')
+plt.ylabel('Landsize')
+
+#3. Apply data wrangling techniques that you have learnt to handle missing, incorrect and invalid data.
+#check missing value
+print(df.isna().sum())
+
+#drop the columns with more than 20% missing values 
+missing_percent = df.isnull().mean() * 100
+
+#drop the columns with more than 20% missing values 
+missing_percent = df.isnull().mean() * 100
+new_df = df.drop(columns=missing_percent[missing_percent > 20].index)
+
+# Replace value '0' and outliers in column Landsize with the median
+landsize = 'Landsize'
+landsize_median = new_df[landsize].median()
+new_df[landsize] = new_df[landsize].replace(0, landsize_median)
+new_df.loc[new_df[landsize] > 100000, landsize] = landsize_median
+new_df
+
+# Explore the new values for numeric columns
+# Specify the column name
+columns = ['Price', 'Distance', 'Landsize']
+
+# Calculate the range of new values for the specific column
+for column in columns:
+    column_range = new_df[column].max() - new_df[column].min()
+    
+    # Calculate and display the range
+    print(f"The minimum value of {column} is:", new_df[column].min())
+    print(f"The maximum value of {column} is:", new_df[column].max())
+    print(f"The range of {column} is:", column_range)
+    print()
+
+    # Calculate and diplay the mean, Q1, Q3, IQR, lower and Upper Limit 
+    print(f"The average value of {column} is:", new_df[column].mean())
+    
+    Q1 = new_df[column].quantile(0.25)
+    Q3 = new_df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    print(f"The lower quantile of {column} is:", Q1)
+    print(f"The upper quantile of {column} is:", Q3)
+    print(f"The interquantile of {column} is:", IQR)
+    
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+    
+    print(f"The lower limit of {column} is:", lower_limit)
+    print(f"The upper limit of {column} is:", upper_limit)
+    print()
+
+#Create boxplot for new dataframe
+plt.figure()  
+boxplot = sns.boxplot(x=new_df['Landsize'])
+boxplot.set_title('Box Plot of Landsize')
+boxplot.set_xlabel('Landsize')
+boxplot.set_ylabel('Count')
+    
+# Display the plot
+plt.show()
+
+# New Scatter plot to show the relationship between price and landsize
+new_df.plot.scatter(x = "Price", y = "Landsize", c = "green")
+plt.title('Price VS Landsize')
+plt.xlabel('Price')
+plt.ylabel('Landsize')
