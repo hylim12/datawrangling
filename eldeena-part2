@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+# [Group_3]
+
+Group Members: 
+1. 1211111904 Eldeena Lim Huey Yinn
+2. 1211109457 Do Wai Lung
+3. 1221305730 Doris Heng
+4. 1211108301 Kong Yi Xuan
+
+"""
 import pandas as pd
 import numpy as np
 
@@ -79,16 +90,16 @@ print(df.isna().sum())
 from sklearn.linear_model import LinearRegression
 from sklearn.feature_selection import SequentialFeatureSelector
 
-X = df.drop(columns=['Diagnosis'])
-y = df['Diagnosis']
-
 # convert 'Diagnosis' column to binary: M = 1 (malignant), B = 0 (benign)
 df['Diagnosis'] = df['Diagnosis'].apply(lambda x: 1 if x == 'M' else 0)
+
+X = df.drop(columns=['Diagnosis'])
+y = df['Diagnosis']
 
 linearreg = LinearRegression()
 
 # forward selection with 4 features
-sfs = SequentialFeatureSelector(linearreg, n_features_to_select=4, direction='forward', scoring = 'accuracy')
+sfs = SequentialFeatureSelector(linearreg, n_features_to_select=4, direction='forward')
 sfs.fit(X, y)
 
 selected_features = X.columns[sfs.get_support()]
@@ -100,15 +111,6 @@ feat_corr = corr_matrix.index[corr_matrix['Diagnosis'].abs() > 0.5].tolist()
 
 # remove 'Diagnosis' if in the list
 if 'Diagnosis' in feat_corr:
-    feat_cor.remove('Diagnosis')
+    feat_corr.remove('Diagnosis')
 
 print("Selected features (Correlation > 0.5):", feat_corr)
-
-from sklearn.linear_model import LassoCV
-
-# cross-validation
-lasso = LassoCV(cv=5).fit(X, y)
-
-# features with non-zero coefficients
-selected_features_lasso = X.columns[lasso.coef_ != 0]
-print("Selected features (Lasso Regression):", selected_features_lasso)
