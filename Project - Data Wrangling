@@ -125,3 +125,33 @@ new_df.plot.scatter(x = "Price", y = "Landsize", c = "green")
 plt.title('Price VS Landsize')
 plt.xlabel('Price')
 plt.ylabel('Landsize')
+
+# 4. Perform any additional steps (e.g., parsing dates, creating additional columns, merging multiple datasets, etc.). 
+# Checking data type
+new_df.info()
+
+# Convert the 'Date' column to datetime format
+new_df['Date']= pd.to_datetime(new_df['Date'], format='%d/%m/%Y')
+new_df.info()
+
+# Combining location related columns
+new_df['FullAddress'] = new_df['Address'] + ', ' + new_df['Postcode'].astype(str) + ', ' + new_df['CouncilArea'] + ', ' + new_df['Regionname']
+new_df
+
+# Create a new dataset combining regionname and rooms with their average price
+sub_data1 = new_df.groupby(['Regionname', 'Rooms'], as_index=False).agg({'Price': 'mean'})
+sub_data1.rename(columns={'Price': 'AveragePrice'}, inplace=True)
+sub_data1['AveragePrice'] = sub_data1['AveragePrice'].round(2)
+sub_data1
+
+# Create a new dataset combining housing type and number of rooms with their average price
+sub_data2 = new_df.groupby(['Type', 'Rooms'], as_index=False).agg({'Price': 'mean'})
+sub_data2.rename(columns={'Price': 'AveragePrice'}, inplace=True)
+sub_data2['AveragePrice'] = sub_data1['AveragePrice'].round(2)
+sub_data2
+
+# Creating new column to categorized price
+bins = [0, 650000, 1075000, 1330000, 2350000, float('inf')]  
+labels = ['Economy', 'Affordable', 'Premium', 'Luxury', 'Ultra-Luxury']
+new_df['PriceCategories'] = pd.cut(new_df['Price'], bins=bins, labels=labels, right=False)
+new_df
