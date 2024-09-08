@@ -5,23 +5,19 @@ import matplotlib.pyplot as plt
 #maybe like price of private rooms or entire home/apt
 
 #PRICE OF HISTOGRAM FOR TYPE OF ROOMS - x=type of rooms, y= price
-airbnb_df = pd.read_csv("AB_NYC_2019.csv")
-airbnb_df = airbnb_df.dropna(subset=["name", "host_name"])
-airbnb_df["last_review"] = airbnb_df["last_review"].fillna("None")
-airbnb_df["reviews_per_month"] = airbnb_df["reviews_per_month"].fillna(0)
 
-brooklyn_prices = airbnb_df[airbnb_df['neighbourhood_group'] == 'Brooklyn']['price']
-manhattan_prices = airbnb_df[airbnb_df['neighbourhood_group'] == 'Manhattan']['price']
-"""
-avg_price = airbnb_df["price"].mean()
-percentile25 = airbnb_df['price'].quantile(0.25)
-percentile75 = airbnb_df['price'].quantile(0.75)
+brooklyn_prices = filtered_df[filtered_df['neighbourhood_group'] == 'Brooklyn']['price']
+manhattan_prices = filtered_df[filtered_df['neighbourhood_group'] == 'Manhattan']['price']
+
+avg_price = filtered_df["price"].mean()
+percentile25 = filtered_df['price'].quantile(0.25)
+percentile75 = filtered_df['price'].quantile(0.75)
 iqr=percentile75-percentile25
 upper_limit = percentile75 + 1.5 * iqr
 lower_limit = percentile25 - 1.5 * iqr
-"""
+
 # Plot histogram for Brooklyn prices
-#brooklyn_prices = brooklyn_prices[airbnb_df['price'] < upper_limit]
+brooklyn_prices = brooklyn_prices[filtered_df['price'] < upper_limit]
 plt.figure(figsize=(10, 6))
 brooklyn_prices.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
 plt.title('Distribution of Prices for Houses in Brooklyn')
@@ -30,10 +26,41 @@ plt.ylabel('Frequency')
 plt.show()
 
 # Plot histogram for Manhattan prices
-#manhattan_prices = manhattan_prices[airbnb_df['price'] < upper_limit]
+manhattan_prices = manhattan_prices[filtered_df['price'] < upper_limit]
 plt.figure(figsize=(10, 6))
 manhattan_prices.plot(kind='hist', bins=30, color='pink', edgecolor='black')
 plt.title('Distribution of Prices for Houses in Manhattan')
 plt.xlabel('Price')
+plt.ylabel('Frequency')
+plt.show()
+
+#DISTRIBUTION FOR DIFFERENT TYPES OF ROOMS IN NYC
+
+room_review = filtered_df[filtered_df['room_type'] == 'Private room']['number_of_reviews']
+home_review = filtered_df[filtered_df['room_type'] == 'Entire home/apt']['number_of_reviews']
+
+
+avg_rev = filtered_df["number_of_reviews"].mean()
+percentile25 = filtered_df['number_of_reviews'].quantile(0.25)
+percentile75 = filtered_df['number_of_reviews'].quantile(0.75)
+iqr=percentile75-percentile25
+upper_limit = percentile75 + 1.5 * iqr
+lower_limit = percentile25 - 1.5 * iqr
+
+
+room_review = room_review[filtered_df['number_of_reviews'] < upper_limit]
+plt.figure(figsize=(10, 6))
+room_review.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
+plt.title('Distribution of Number of Reviews for Private Room in NYC')
+plt.xlabel('Number of Reviews')
+plt.ylabel('Frequency')
+plt.show()
+
+# 
+home_review = home_review[filtered_df['number_of_reviews'] < upper_limit]
+plt.figure(figsize=(10, 6))
+home_review.plot(kind='hist', bins=30, color='pink', edgecolor='black')
+plt.title('Distribution of Number of Reviews for Entire Home/Apartment in NYC')
+plt.xlabel('Number of Reviews')
 plt.ylabel('Frequency')
 plt.show()
