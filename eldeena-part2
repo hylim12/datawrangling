@@ -93,7 +93,7 @@ from sklearn.feature_selection import SequentialFeatureSelector
 # convert 'Diagnosis' column to binary: M = 1 (malignant), B = 0 (benign)
 df['Diagnosis'] = df['Diagnosis'].apply(lambda x: 1 if x == 'M' else 0)
 
-X = df.drop(columns=['Diagnosis'])
+X = df.drop(columns=['Diagnosis', 'ID'])
 y = df['Diagnosis']
 
 linearreg = LinearRegression()
@@ -131,3 +131,64 @@ s = abs(cor[y])
 threshold = 0.5
 selectedfeatures = s[s>0.5]
 print("Selected features:", selectedfeatures)
+
+
+from sklearn.linear_model import LassoCV
+reg = LassoCV()
+reg.fit(X,y)
+print("Best alpha using built-in LassoCV: %f" % reg.alpha_)
+print("Best score using built-in LassoCV: %f" %reg.score(X,y))
+coef=pd.Series(reg.coef_, index=X.columns)
+print(coef)
+print("Lasso picked " + str(sum(coef != 0))+"variables and eliminated the other " + str(sum(coef == 0)) + " variables")
+
+#the plot figure below shows which features are selected
+imp_coef = coef.sort_values()
+import matplotlib
+matplotlib.rcParams['figure.figsize'] = (8.0, 10.0)
+imp_coef.plot(kind = "barh")
+plt.title("Feature importance using Lasso Model")
+
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Lasso
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+
+# standardize the features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+lasso = Lasso(alpha=0.0001)  
+lasso.fit(X_train_scaled, y_train)
+
+print("Number of selected features:", np.sum(lasso.coef_ != 0))
+
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train.shape[1]), np.abs(lasso.coef_))
+plt.title('Feature importance using Lasso Model')
+plt.show()
+
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Lasso
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+
+# standardize the features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+lasso = Lasso(alpha=0.0001)  
+lasso.fit(X_train_scaled, y_train)
+
+print("Number of selected features:", np.sum(lasso.coef_ != 0))
+
+plt.figure(figsize=(10, 6))
+plt.bar(range(X_train.shape[1]), np.abs(lasso.coef_))
+plt.title('Feature importance using Lasso Model')
+plt.show()
