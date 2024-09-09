@@ -1,0 +1,31 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Create histograms for 'price'
+plt.figure(figsize=(12, 5))
+
+# Histogram for 'price'
+plt.subplot(1, 2, 1)
+plt.hist(data_cleaned['price'], bins=50, color='blue', edgecolor='black')
+plt.title('Distribution of Price')
+plt.xlabel('Price')
+plt.ylabel('Frequency')
+
+plt.show()
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Create histograms for 'number_of_reviews'
+plt.figure(figsize=(12, 5))
+
+# Histogram for 'number_of_reviews'
+plt.subplot(1, 2, 2)
+plt.hist(data_cleaned['number_of_reviews'], bins=50, color='green', edgecolor='black')
+plt.title('Distribution of Number of Reviews')
+plt.xlabel('Number of Reviews')
+plt.ylabel('Frequency')
+
+plt.show()
