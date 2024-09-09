@@ -105,12 +105,29 @@ sfs.fit(X, y)
 selected_features = X.columns[sfs.get_support()]
 print("Selected features (Forward Selection):", selected_features)
 
-corr_matrix = df.corr()
- 
-feat_corr = corr_matrix.index[corr_matrix['Diagnosis'].abs() > 0.5].tolist()
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+import warnings
+warnings.filterwarnings("ignore")
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix
+np.random.seed(123)
 
-# remove 'Diagnosis' if in the list
-if 'Diagnosis' in feat_corr:
-    feat_corr.remove('Diagnosis')
+data = pd.read_csv('wdbc.data')
+print(data.head())
+data = data.iloc[:,2:]
+print(data.head())
 
-print("Selected features (Correlation > 0.5):", feat_corr)
+cor = data.corr()
+cor
+plt.figure(figsize=(10,6))
+sns.heatmap(cor, annot=True)
+y = data.columns[1] 
+s = abs(cor[y])
+threshold = 0.5
+selectedfeatures = s[s>0.5]
+print("Selected features:", selectedfeatures)
