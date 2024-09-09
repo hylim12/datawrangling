@@ -1,0 +1,160 @@
+#Part 1 Missing Data Handling
+import pandas as pd
+
+# Load the dataset
+airbnb_df = pd.read_csv('AB_NYC_2019.csv')
+
+# Check for missing values in each column
+missing_values = airbnb_df.isnull().sum()
+
+# Display columns with missing values
+missing_columns = missing_values[missing_values > 0]
+print(missing_columns)
+
+
+# Dropping rows where name and host_name are missing
+airbnb_df.dropna(subset = ['name', 'host_name'], inplace = True)
+
+# Dropping the last_review column
+airbnb_df.drop(columns = 'last_review', inplace = True)
+
+# Fill the missing values in the columns reviews_per_month to 0, as there are no reviews for the listing
+airbnb_df['reviews_per_month'] = airbnb_df['reviews_per_month'].fillna(0)
+
+# Verify the answer
+print(airbnb_df)
+
+
+# Check if there any missing values exist in dataset 1
+print(airbnb_df.isnull().sum())
+
+
+# Part 2 Outliers Detection and Treatment 
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Outlier Detection
+# Columns of interest
+columns_of_interest = ['price', 'minimum_nights', 'number_of_reviews', 'reviews_per_month']
+
+# Box Plots
+plt.figure(figsize=(12, 8))
+for i, columns in enumerate(columns_of_interest, 1):
+    plt.subplot(2, 2, i)
+    sns.boxplot(x=airbnb_df[columns])
+    plt.title(f'Box Plot: {columns}')
+plt.tight_layout()
+plt.show()
+
+# Scatter plots
+plt.figure(figsize = (12, 6))
+sns.scatterplot(x = airbnb_df['price'], y = airbnb_df['minimum_nights'])
+plt.title('Scatter Plot: Price vs Minimum Nights')
+plt.xlabel('Price')
+plt.ylabel('Minimum Nights')
+plt.show()
+
+plt.figure(figsize = (12, 6))
+sns.scatterplot(x = airbnb_df['price'], y = airbnb_df['number_of_reviews'])
+plt.title('Scatter Plot: Price vs Number of Reviews')
+plt.xlabel('Price')
+plt.ylabel('Number of Reviews')
+plt.show()
+
+plt.figure(figsize = (12, 6))
+sns.scatterplot(x = airbnb_df['price'], y = airbnb_df['reviews_per_month'])
+plt.title('Scatter Plot: Price vs Reviews Per Month')
+plt.xlabel('Price')
+plt.ylabel('Reviews Per Month')
+plt.show()
+
+# Function to remove outliers using IQR for the selected columns
+def remove_outliers(df, columns):
+    for cols in columns:
+        q1 = df[cols].quantile(0.25)
+        q3 = df[cols].quantile(0.75)
+        iqr = q3 - q1
+        lower_limit = q1 - 1.5 * iqr
+        upper_limit = q3 + 1.5 * iqr
+        print("\nColumn: %s" %cols)
+        print("Lower Limit: %f" %lower_limit)
+        print("Upper Limit: %f" %upper_limit)
+        print("Q1: %f" %q1)
+        print("Q3: %f" %q3)
+        print("IQR: %f \n" %iqr)
+        df = df[(df[cols] > lower_limit) & (df[cols] < upper_limit)]
+    return df
+
+# Using IQR method to remove outliers from the columns of interest
+data_cleaned = remove_outliers(airbnb_df, columns_of_interest)
+
+# Display dataset after removing outliers
+print(data_cleaned)
+
+# Re-plot Box Plots After Outlier Removal to verify
+plt.figure(figsize=(12, 8))
+for i, cols in enumerate(columns_of_interest, 1):
+    plt.subplot(2, 2, i)
+    sns.boxplot(x = data_cleaned[cols])
+    plt.title(f'Box Plot: {cols} (Outliers Removed)')
+plt.tight_layout()
+plt.show()
+
+#Part 3 Data Transformation
+# Select only 'Private room' listings in 'Manhattan' neighborhood
+# and save it to data frame named 'data_sub1'
+data_sub1 = data_cleaned[(data_cleaned['neighbourhood_group'] == 'Manhattan') & (data_cleaned['room_type'] == 'Private room')]
+
+# Display the result (data frame named data_sub1) to verify the answer
+print(data_sub1)
+
+
+# Filter data_sub1 to include only listings with 3 minimum number of nights and sort the data according to Price.
+data_sub1 = data_sub1[data_sub1['minimum_nights'] >= 3].sort_values(by = 'price')
+
+# Display the data frame (data_sub1) to check the displayed data is correct or not
+print(data_sub1)
+
+
+# Create data_sub2 where each row represents a unique combination of neighbourhood_group 
+# and room_type with average price for each combination
+data_sub2 = data_cleaned.groupby(['neighbourhood_group', 'room_type'])['price'].mean().reset_index()
+
+# Rename the price column, which represents the average price 
+# calculated by using the mean() function for each combination as average_price
+data_sub2.rename(columns = {'price' : 'average_price'}, inplace = True)
+
+# Display the result for checking
+print(data_sub2)
+
+
+# Create the columns named high_demand area & revenue
+# high_demand_area's column will return True if availability_365 greater than 300 and vice versa
+# revenue's column will be calculated based on price and minimum_nights
+data_cleaned['high_demand_area'] = data_cleaned['availability_365'] > 300
+data_cleaned['revenue'] = data_cleaned['price'] * data_cleaned['minimum_nights']
+
+#Display the result for checking purpose
+print(data_cleaned)
+
+
+# Define price bins
+bins = [0, 50, 150, data_cleaned['price'].max()]
+print(data_cleaned['price'].max())
+labels = ['Budget', 'Moderate', 'Expensive']
+
+# Create a new column with binned price categories
+data_cleaned['price_category'] = pd.cut(data_cleaned['price'], bins=bins, labels=labels)
+data_cleaned['price_category'].value_counts()
+
+
+# Calculate summary statistics for 'price'
+summary_stats = data_cleaned.groupby(['neighbourhood_group', 'room_type'])['price'].agg(['mean', 'median']).reset_index()
+print(summary_stats)
+
+
+
+# Calculate the average 'availability_365' for each 'neighbourhood_group'
+avg_availability = data_cleaned.groupby('neighbourhood_group')['availability_365'].mean().reset_index()
+print(avg_availability)
