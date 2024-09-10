@@ -1,3 +1,11 @@
+[Group_3]
+Group Members:
+
+1211111904 Eldeena Lim Huey Yinn
+1211109457 Do Wai Lung
+1221305730 Doris Heng
+1211108301 Kong Yi Xuan
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
