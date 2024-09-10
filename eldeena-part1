@@ -14,110 +14,149 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-#QUESTION 1
+#QUESTION 1: Missing Data Handling (2 Marks)
 
+# Read the dataset
 airbnb_df = pd.read_csv("AB_NYC_2019.csv")
-print(airbnb_df.isna().sum())
+
+# Check and display columns with missing values
+missing_values = airbnb_df.isna().sum()
+missing_columns = missing_values[missing_values > 0]
+print("Columns with Missing values:\n", missing_columns)
+
+# Drop rows where 'name' and 'host_name' are missing
 airbnb_df = airbnb_df.dropna(subset=["name", "host_name"])
-#Missing values of Last Review column is more than 20%
+
+# Missing values of Last Review column is more than 20%
 airbnb_df.drop(columns = 'last_review', inplace = True)
-airbnb_df["reviews_per_month"].fillna(0, inplace = True)
+
+# Fill the missing values in 'reviews_per_month' to 0, as there are no reviews for the listing
+airbnb_df["reviews_per_month"] = airbnb_df["reviews_per_month"].fillna(0)
+
 print(airbnb_df)
 
-#QUESTION 2
+#QUESTION 2: Outliers Detection and Treatment (2 Marks)
 
-plt.figure(figsize=(16,5))
-plt.subplot(1,1,1)
-sns.distplot(airbnb_df['price'])
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Boxplots of columns using seaborn
+columns = ['price', 'minimum_nights', 'number_of_reviews', 'reviews_per_month']
+
+# Box Plots
+plt.figure(figsize=(12, 8))
+for count, column in enumerate(columns, 1):
+    plt.subplot(2, 2, count)
+    sns.boxplot(x=airbnb_df[column])
+    plt.title(f'Box Plot: {column.replace('_', ' ').capitalize()}')
+    plt.ylabel('Count')
+plt.tight_layout()
 plt.show()
 
-plt.figure(figsize=(16,5))
-plt.subplot(1,1,1)
-sns.distplot(airbnb_df['reviews_per_month'])
+# Scatterplots for relationships between variables
+plt.figure(figsize = (12, 6))
+sns.scatterplot(x = airbnb_df['price'], y = airbnb_df['minimum_nights'])
+plt.title('Scatter Plot: Price vs Minimum Nights')
+plt.xlabel('Price')
+plt.ylabel('Minimum Nights')
 plt.show()
 
-price_hist = sns.boxplot(x = airbnb_df['price'])
-price_hist.set_title('Price of Airbnb in NYC')
-price_hist.set_xlabel('Price')
-price_hist.set_ylabel('Count')
+plt.figure(figsize = (12, 6))
+sns.scatterplot(x = airbnb_df['price'], y = airbnb_df['number_of_reviews'])
+plt.title('Scatter Plot: Price vs Number of Reviews')
+plt.xlabel('Price')
+plt.ylabel('Number of Reviews')
+plt.show()
 
-reviews_hist = sns.boxplot(x = airbnb_df['reviews_per_month'])
-reviews_hist.set_title('Reviews of Airbnb in NYC')
-reviews_hist.set_xlabel('Reviews Per Month')
-reviews_hist.set_ylabel('Count')
+plt.figure(figsize = (12, 6))
+sns.scatterplot(x = airbnb_df['price'], y = airbnb_df['reviews_per_month'])
+plt.title('Scatter Plot: Price vs Reviews Per Month')
+plt.xlabel('Price')
+plt.ylabel('Reviews Per Month')
+plt.show()
 
-airbnb_df.plot.scatter(x = "price", y = "reviews_per_month", c = "darkblue")
-
-# List of columns to iterate over
+# List of columns to iterate over for boxplots without outliers
 columns = ['price', 'reviews_per_month','minimum_nights','availability_365']
 
-# Loop through each column to create separate boxplots
-for column in columns:
-    # Calculate the average
-    avg_value = airbnb_df[column].mean()
-    print(f"Average {column.capitalize()}: {avg_value}")
-
-    # Calculate Q1, Q3, and IQR
-    percentile25 = airbnb_df[column].quantile(0.25)
-    percentile75 = airbnb_df[column].quantile(0.75)
-    print(f"Q1 ({column.capitalize()}):", percentile25)
-    print(f"Q3 ({column.capitalize()}):", percentile75)
-
-    iqr = percentile75 - percentile25
-    print(f"Interquartile range ({column.capitalize()}):", iqr)
-
-    # Calculate upper and lower limits
-    upper_limit = percentile75 + 1.5 * iqr
-    lower_limit = percentile25 - 1.5 * iqr
-    print(f"Upper limit ({column.capitalize()}):", upper_limit)
-    print(f"Lower limit ({column.capitalize()}):", lower_limit)
-
-    # Filter data within upper limit
-    filtered_df = airbnb_df[airbnb_df[column] < upper_limit]
-
-    # Create a new figure for each column
-    plt.figure()
+# Function to remove outliers using IQR for the selected columns
+def remove_outliers(airbnb_df, column):
+    for column in columns:
+        # Calculate the average
+        avg_value = airbnb_df[column].mean()
+        print(f"\n\nAverage {column.capitalize()}: {avg_value}")
     
-    # Create a boxplot for the current column
-    boxplot = sns.boxplot(x=filtered_df[column])
-    boxplot.set_title(f'{column.capitalize()} of Airbnb in NYC')
-    boxplot.set_xlabel(column.capitalize())
-    boxplot.set_ylabel('Count')
+        # Calculate Q1, Q3, and IQR
+        percentile25 = airbnb_df[column].quantile(0.25)
+        percentile75 = airbnb_df[column].quantile(0.75)
+        print(f"Q1 ({column.capitalize()}):", percentile25)
+        print(f"Q3 ({column.capitalize()}):", percentile75)
     
-    # Show the plot
-    plt.show()
+        iqr = percentile75 - percentile25
+        print(f"Interquartile range ({column.capitalize()}):", iqr)
+    
+        # Calculate upper and lower limits
+        upper_limit = percentile75 + 1.5 * iqr
+        lower_limit = percentile25 - 1.5 * iqr
+        print(f"Upper limit ({column.capitalize()}):", upper_limit)
+        print(f"Lower limit ({column.capitalize()}):", lower_limit)
+        airbnb_df = airbnb_df[airbnb_df[column] < upper_limit]
+    return airbnb_df
 
-#QUESTION 3
+# Filter data eithout outliers
+filtered_df = remove_outliers(airbnb_df, columns)
+    
+# Display dataset after removing outliers
+print(filtered_df)
 
+# Re-plot Box Plots after outlier removal to verify
+plt.figure(figsize=(12, 8))
+for i, column in enumerate(columns, 1):
+    plt.subplot(2, 2, i)
+    sns.boxplot(x = filtered_df[column])
+    plt.title(f'Box Plot: {column} (Outliers Removed)')
+plt.tight_layout()
+plt.show()
+
+
+#QUESTION 3: Data Transformation (6 Marks)
+
+# Select only 'Private room' listings in 'Manhattan' neighborhood
 condition1 = filtered_df["neighbourhood_group"] == "Manhattan"
 condition2 = filtered_df["room_type"] == "Private room"
 data_sub1 = filtered_df[condition1 & condition2]
 print(data_sub1)
 
+#Filter data_sub1 to include only listings with 3 minimum number of nights and sort the data according to Price.
 data_sub1 = data_sub1[data_sub1["minimum_nights"] >= 3]
 data_sub1.sort_values(by =["price"])
 
-data_sub2 = filtered_df.groupby(["neighbourhood_group","room_type"])
-data_sub2.price.mean().reset_index()
+#Create data_sub2 where each row represents a unique combination of neighbourhood_group and room_type with average price for each combination.
+data_sub2 = filtered_df.groupby(['neighbourhood_group', 'room_type'])['price'].mean().reset_index()
+data_sub2.rename(columns = {'price' : 'average_price'}, inplace = True)
+# Display the result for checking
+data_sub2
 
+# Create a new column indicating high-demand area (availability_365 > 300)
 filtered_df['high_demand area'] = filtered_df['availability_365'] > 300
+# Calculate the revenue for each listing (revenue = price * minimum_nights)
 filtered_df['revenue'] = filtered_df['price'] * filtered_df['minimum_nights']
+# Display the dataframe
 filtered_df
 
-max_price = filtered_df["price"].max()
-print("Max:",max_price)
-min_price = filtered_df["price"].min()
-print("Min:",min_price)
-
-bins = [0, 100, 500, 1000]
-categories = ["budget","moderate","expensive"]
+# Bin the 'price' column into categories based on price ranges
+bins = [0, 100, 150, filtered_df['price'].max()]
+categories = ["Budget","Moderate","Expensive"]
 filtered_df['price_category'] = pd.cut(filtered_df['price'], bins, labels=categories)
-filtered_df
+print(filtered_df)
+filtered_df['price_category'].value_counts()
 
+# Calculate summary statistics for the 'price' column based on neighbourhood_group and room_type.
 sum_stat = filtered_df.groupby(["neighbourhood_group","room_type"])
 sum_stat = sum_stat["price"].describe()
 sum_stat
 
+#Calculate the average 'availability_365' for each 'neighbourhood_group'
 avg_avail = filtered_df.groupby('neighbourhood_group')
 avg_avail = avg_avail['availability_365'].mean().reset_index()
 print(avg_avail)
