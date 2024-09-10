@@ -1,15 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-#try to make the graph of 1 numerical value based on different types of 1 attribute
-#maybe like price of private rooms or entire home/apt
-
-#PRICE OF HISTOGRAM FOR TYPE OF ROOMS - x=type of rooms, y= price
+# Histogram of Rental prices in different cities 
 
 brooklyn_prices = filtered_df[filtered_df['neighbourhood_group'] == 'Brooklyn']['price']
 manhattan_prices = filtered_df[filtered_df['neighbourhood_group'] == 'Manhattan']['price']
 
-avg_price = filtered_df["price"].mean()
 percentile25 = filtered_df['price'].quantile(0.25)
 percentile75 = filtered_df['price'].quantile(0.75)
 iqr=percentile75-percentile25
@@ -20,19 +17,32 @@ lower_limit = percentile25 - 1.5 * iqr
 brooklyn_prices = brooklyn_prices[filtered_df['price'] < upper_limit]
 plt.figure(figsize=(10, 6))
 brooklyn_prices.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
-plt.title('Distribution of Prices for Houses in Brooklyn')
+plt.title('Distribution of Rental Prices for Houses in Brooklyn')
 plt.xlabel('Price')
 plt.ylabel('Frequency')
 plt.show()
+
+"""
+For the histogram of "Distribution of Rental Prices for Houses in Brooklyn", it can be observed that it is a right-skewed distribution.
+Most of the rental prices are clustured in the lower range with 50 dollars having the highest frequency.
+The higher the prices, the fewer the listings causing the tail of distribution to the right.
+Prices above the upper limit are excluded which eliminates outliers in this histogram.
+
+"""
 
 # Plot histogram for Manhattan prices
 manhattan_prices = manhattan_prices[filtered_df['price'] < upper_limit]
 plt.figure(figsize=(10, 6))
 manhattan_prices.plot(kind='hist', bins=30, color='pink', edgecolor='black')
-plt.title('Distribution of Prices for Houses in Manhattan')
+plt.title('Distribution of Rental Prices for Houses in Manhattan')
 plt.xlabel('Price')
 plt.ylabel('Frequency')
 plt.show()
+
+"""
+
+"""
+
 
 #DISTRIBUTION FOR DIFFERENT TYPES OF ROOMS IN NYC
 
@@ -63,4 +73,38 @@ home_review.plot(kind='hist', bins=30, color='pink', edgecolor='black')
 plt.title('Distribution of Number of Reviews for Entire Home/Apartment in NYC')
 plt.xlabel('Number of Reviews')
 plt.ylabel('Frequency')
+plt.show()
+
+
+---
+
+# Create histograms for 'price'
+plt.figure(figsize=(12, 5))
+
+# Histogram for 'price'
+plt.subplot(1, 2, 1)
+filtered_df = filtered_df[filtered_df['price'] < upper_limit]
+plt.hist(filtered_df['price'], bins=50, color='blue', edgecolor='black')
+plt.title('Distribution of Price')
+plt.xlabel('Price')
+plt.ylabel('Frequency')
+
+plt.show()
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Create histograms for 'number_of_reviews'
+plt.figure(figsize=(12, 5))
+
+# Histogram for 'number_of_reviews'
+plt.subplot(1, 2, 2)
+filtered_df = filtered_df[filtered_df['number_of_reviews'] < upper_limit]
+plt.hist(filtered_df['number_of_reviews'], bins=50, color='green', edgecolor='black')
+plt.title('Distribution of Number of Reviews')
+plt.xlabel('Number of Reviews')
+plt.ylabel('Frequency')
+
 plt.show()
