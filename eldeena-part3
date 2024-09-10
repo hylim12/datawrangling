@@ -86,6 +86,9 @@ plt.show()
 
 ---
 
+import pandas as pd
+import matplotlib.pyplot as plt
+
 # Create histograms for 'price'
 plt.figure(figsize=(12, 5))
 
@@ -99,7 +102,12 @@ plt.ylabel('Frequency')
 
 plt.show()
 
-
+"""
+Distribution of Price
+Shape: The histogram for price is likely to be right-skewed, with a large number of listings clustered at lower price ranges and fewer listings as the price increases.
+This suggests that most Airbnb listings are relatively affordable, with only a small proportion of listings being high-priced. 
+The skewness might indicate that luxury or high-end properties are less common on the platform.
+"""
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -116,3 +124,10 @@ plt.xlabel('Number of Reviews')
 plt.ylabel('Frequency')
 
 plt.show()
+
+"""
+Distribution of Number of Reviews
+Shape: The histogram for number_of_reviews may also be right-skewed, showing that most listings have received a relatively small number of reviews, while a few listings have received a very high number of reviews.
+This could suggest that a majority of properties are either new or not heavily reviewed, while a few popular listings have garnered a large number of reviews. 
+This could indicate varying levels of popularity or occupancy among the listings.
+"""
