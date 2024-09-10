@@ -77,7 +77,7 @@ plt.ylabel('Reviews Per Month')
 plt.show()
 
 # List of columns to iterate over for boxplots without outliers
-columns = ['price', 'reviews_per_month','minimum_nights','number_of_reviews']
+columns = ['price','minimum_nights','number_of_reviews', 'reviews_per_month']
 
 # Function to remove outliers using IQR for the selected columns
 def remove_outliers(airbnb_df, column):
