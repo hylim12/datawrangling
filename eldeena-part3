@@ -10,6 +10,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # Histogram of Rental prices in different cities 
 
@@ -33,7 +35,7 @@ plt.show()
 
 """
 For the histogram of "Distribution of Rental Prices for Houses in Brooklyn", the shape can be observed that it is a right-skewed distribution.
-Prices are spread across a wide range but most of the rental prices are clustured in the lower range with 50 dollars having the highest frequency.
+Prices are spread across a wide range but most of the rental prices are clustured in the lower range (high frequency) with 50 dollars having the highest frequency.
 The higher the prices, the fewer the listings causing the tail of distribution to the right.
 Prices above the upper limit and lower limit are excluded which eliminates outliers in this histogram.
 
@@ -49,21 +51,18 @@ plt.ylabel('Frequency')
 plt.show()
 
 """
+Meanwhile, for the histogram of "Distribution of Rental Prices for Houses in Manhattan", the shape can be observed that it is a right-skewed distribution similar to Brooklyn.
+Most prices are concentrated on the lower end and fewer higher priced listings but also having a wide range.
+While the distribution is similar to Brooklyn, rental listings in Manhattan show higher frequency in the higher range of prices with a longer right tail.
+Prices above the upper limit and lower limit are also excluded which eliminates outliers in this histogram.
 
 """
 
 
-import pandas as pd
-import matplotlib as mpl
-import seaborn as sns
-
-#try to make the graph of 1 numerical value based on different types of 1 attribute
-
-#DISTRIBUTION FOR DIFFERENT TYPES OF ROOMS IN NYC
+# Distribution for Number of Reviews for different Room Types in NYC
 
 room_review = filtered_df[filtered_df['room_type'] == 'Private room']['number_of_reviews']
 home_review = filtered_df[filtered_df['room_type'] == 'Entire home/apt']['number_of_reviews']
-
 
 avg_rev = filtered_df["number_of_reviews"].mean()
 percentile25 = filtered_df['number_of_reviews'].quantile(0.25)
@@ -72,6 +71,7 @@ iqr=percentile75-percentile25
 upper_limit = percentile75 + 1.5 * iqr
 lower_limit = percentile25 - 1.5 * iqr
 
+# Plot histogram for Number of Reviews for Private Room in NYC
 room_review = room_review[(filtered_df['number_of_reviews'] > lower_limit) & (filtered_df['number_of_reviews'] < upper_limit)]
 plt.figure(figsize=(10, 6))
 room_review.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
@@ -80,6 +80,16 @@ plt.xlabel('Number of Reviews')
 plt.ylabel('Frequency')
 plt.show()
 
+"""
+For the histogram of "Distribution of Number of Reviews for Private Room in NYC", the shape is a right-skewed distribution.
+This signifies that most private room listings have lower number of reviews.
+The higher the number of reviews for a private room listing, the lower the frequency of listing.
+In other words, lower number of reviews have higher frequency for private rooms.
+The upper and lower limits by the interquartile range helps to remove extreme outliers with unusual number of reviews.
+
+"""
+
+# Plot histogram for Number of Reviews for Entire Home/Apartment in NYC
 home_review = home_review[(filtered_df['number_of_reviews'] > lower_limit) & (filtered_df['number_of_reviews'] < upper_limit)]
 plt.figure(figsize=(10, 6))
 home_review.plot(kind='hist', bins=30, color='pink', edgecolor='black')
@@ -88,6 +98,13 @@ plt.xlabel('Number of Reviews')
 plt.ylabel('Frequency')
 plt.show()
 
+"""
+Moving on, the histogram of "Distribution of Number of Reviews for Entire Home/Apartment in NYC", the shape is also a right-skewed distribution.
+This displays that most entire home/apartment listings have lower concentration for number of reviews.
+The higher the number of reviews for an entire home/apartment listing, the lower the frequency of listing.
+Similarly, lower number of reviews have higher frequency for an entire home/apartment.
+Filtering via upper and lower limits by the interquartile range helps to remove extreme outliers with unusual number of reviews.
+"""
 
 ---
 
