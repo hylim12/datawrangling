@@ -10,6 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 # Histogram of Rental prices in different cities 
 
 brooklyn_prices = filtered_df[filtered_df['neighbourhood_group'] == 'Brooklyn']['price']
@@ -22,7 +23,7 @@ upper_limit = percentile75 + 1.5 * iqr
 lower_limit = percentile25 - 1.5 * iqr
 
 # Plot histogram for Brooklyn prices
-brooklyn_prices = brooklyn_prices[filtered_df['price'] < upper_limit]
+brooklyn_prices = brooklyn_prices[(filtered_df['price'] > lower_limit) & (filtered_df['price'] < upper_limit)]
 plt.figure(figsize=(10, 6))
 brooklyn_prices.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
 plt.title('Distribution of Rental Prices for Houses in Brooklyn')
@@ -31,15 +32,15 @@ plt.ylabel('Frequency')
 plt.show()
 
 """
-For the histogram of "Distribution of Rental Prices for Houses in Brooklyn", it can be observed that it is a right-skewed distribution.
-Most of the rental prices are clustured in the lower range with 50 dollars having the highest frequency.
+For the histogram of "Distribution of Rental Prices for Houses in Brooklyn", the shape can be observed that it is a right-skewed distribution.
+Prices are spread across a wide range but most of the rental prices are clustured in the lower range with 50 dollars having the highest frequency.
 The higher the prices, the fewer the listings causing the tail of distribution to the right.
-Prices above the upper limit are excluded which eliminates outliers in this histogram.
+Prices above the upper limit and lower limit are excluded which eliminates outliers in this histogram.
 
 """
 
 # Plot histogram for Manhattan prices
-manhattan_prices = manhattan_prices[filtered_df['price'] < upper_limit]
+manhattan_prices = manhattan_prices[(filtered_df['price'] > lower_limit) & (filtered_df['price'] < upper_limit)]
 plt.figure(figsize=(10, 6))
 manhattan_prices.plot(kind='hist', bins=30, color='pink', edgecolor='black')
 plt.title('Distribution of Rental Prices for Houses in Manhattan')
@@ -51,6 +52,12 @@ plt.show()
 
 """
 
+
+import pandas as pd
+import matplotlib as mpl
+import seaborn as sns
+
+#try to make the graph of 1 numerical value based on different types of 1 attribute
 
 #DISTRIBUTION FOR DIFFERENT TYPES OF ROOMS IN NYC
 
@@ -65,8 +72,7 @@ iqr=percentile75-percentile25
 upper_limit = percentile75 + 1.5 * iqr
 lower_limit = percentile25 - 1.5 * iqr
 
-
-room_review = room_review[filtered_df['number_of_reviews'] < upper_limit]
+room_review = room_review[(filtered_df['number_of_reviews'] > lower_limit) & (filtered_df['number_of_reviews'] < upper_limit)]
 plt.figure(figsize=(10, 6))
 room_review.plot(kind='hist', bins=30, color='lightblue', edgecolor='black')
 plt.title('Distribution of Number of Reviews for Private Room in NYC')
@@ -74,8 +80,7 @@ plt.xlabel('Number of Reviews')
 plt.ylabel('Frequency')
 plt.show()
 
-# 
-home_review = home_review[filtered_df['number_of_reviews'] < upper_limit]
+home_review = home_review[(filtered_df['number_of_reviews'] > lower_limit) & (filtered_df['number_of_reviews'] < upper_limit)]
 plt.figure(figsize=(10, 6))
 home_review.plot(kind='hist', bins=30, color='pink', edgecolor='black')
 plt.title('Distribution of Number of Reviews for Entire Home/Apartment in NYC')
@@ -94,7 +99,7 @@ plt.figure(figsize=(12, 5))
 
 # Histogram for 'price'
 plt.subplot(1, 2, 1)
-filtered_df = filtered_df[filtered_df['price'] < upper_limit]
+filtered_df = filtered_df[(filtered_df['price'] > lower_limit) & (filtered_df['price'] < upper_limit)]
 plt.hist(filtered_df['price'], bins=50, color='blue', edgecolor='black')
 plt.title('Distribution of Price')
 plt.xlabel('Price')
@@ -117,7 +122,7 @@ plt.figure(figsize=(12, 5))
 
 # Histogram for 'number_of_reviews'
 plt.subplot(1, 2, 2)
-filtered_df = filtered_df[filtered_df['number_of_reviews'] < upper_limit]
+filtered_df = filtered_df[(filtered_df['number_of_reviews'] > lower_limit) & (filtered_df['number_of_reviews'] < upper_limit)]
 plt.hist(filtered_df['number_of_reviews'], bins=50, color='green', edgecolor='black')
 plt.title('Distribution of Number of Reviews')
 plt.xlabel('Number of Reviews')
