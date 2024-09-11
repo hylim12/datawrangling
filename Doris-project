@@ -1,0 +1,23 @@
+#mean, sum, range ,variance and srandard deviation for numeric colums
+selected_columns=['price', 'minimum_nights', 'number_of_reviews', 'reviews_per_month', 
+                  'calculated_host_listings_count', 'availability_365']
+numeric_columns = df[selected_columns].describe()
+print(numeric_columns)
+
+#culculate mean and sum
+mean_values = df[selected_columns].mean()
+sum_values = df[selected_columns].sum()
+
+#culculate range
+range_values = df[selected_columns].max()-df[selected_columns].min()
+
+#calculate variance and standard deviation
+variance_values = df[selected_columns].var()
+std_dev_values = df[selected_columns].std()
+
+#show the result
+stats_summary= pd.DataFrame({'Mean:':mean_values,'Sum:':sum_values,'Range:':range_values,
+                             'Variance:':variance_values,'Standard Deviation:':std_dev_values})
+print()
+print('Summary Statistics for Numeric Columns:')
+print(stats_summary)
