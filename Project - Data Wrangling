@@ -41,6 +41,19 @@ for column in columns:
     print(f"The upper limit of {column} is:", upper_limit)
     print()
 
+#Create Histogram for specific numeric columns
+columns = ['Price', 'Distance', 'Landsize']
+
+for column in columns:
+    plt.hist(df[column], bins=25, color='skyblue', edgecolor='black')
+    plt.xlabel([column])
+    plt.ylabel(f"Histogram of {column}")
+    plt.title(column)
+    plt.show()
+
+# Create histogram for all columns
+df.hist(figsize = (20,15)) 
+
 #Create boxplot for specific columns
 columns = ['Price', 'Distance', 'Landsize']
 
@@ -50,8 +63,6 @@ for column in columns:
     boxplot.set_title(f"Box Plot of {column}")
     boxplot.set_xlabel(column)
     boxplot.set_ylabel('Count')
-    
-    # Display the plot
     plt.show()
 
 # Scatter plot to show the relationship between price and landsize
@@ -66,17 +77,16 @@ print(df.isna().sum())
 
 #drop the columns with more than 20% missing values 
 missing_percent = df.isnull().mean() * 100
-
-#drop the columns with more than 20% missing values 
-missing_percent = df.isnull().mean() * 100
 new_df = df.drop(columns=missing_percent[missing_percent > 20].index)
 
-# Replace value '0' and outliers in column Landsize with the median
-landsize = 'Landsize'
-landsize_median = new_df[landsize].median()
-new_df[landsize] = new_df[landsize].replace(0, landsize_median)
-new_df.loc[new_df[landsize] > 100000, landsize] = landsize_median
-new_df
+# Checking zero values for Landsize column
+zero_landsize_rows = new_df[new_df['Landsize'] == 0]
+display(zero_landsize_rows)
+
+# Replace zero value with NaN
+new_df['Landsize'] = new_df['Landsize'].replace(0, np.nan)
+# Convert the column to float
+new_df['Landsize'] = pd.to_numeric(new_df['Landsize'], errors='coerce')
 
 # Explore the new values for numeric columns
 # Specify the column name
@@ -110,14 +120,18 @@ for column in columns:
     print(f"The upper limit of {column} is:", upper_limit)
     print()
 
+# Create new histogram for column landsize
+plt.hist(new_df['Landsize'], bins=25, color='orange', edgecolor='black')
+plt.xlabel('Landsize')
+plt.ylabel('Count')
+plt.title('Landsize Distribution')
+
 #Create boxplot for new dataframe
 plt.figure()  
 boxplot = sns.boxplot(x=new_df['Landsize'])
 boxplot.set_title('Box Plot of Landsize')
 boxplot.set_xlabel('Landsize')
 boxplot.set_ylabel('Count')
-    
-# Display the plot
 plt.show()
 
 # New Scatter plot to show the relationship between price and landsize
@@ -125,6 +139,12 @@ new_df.plot.scatter(x = "Price", y = "Landsize", c = "green")
 plt.title('Price VS Landsize')
 plt.xlabel('Price')
 plt.ylabel('Landsize')
+
+# New Scatter plot to show the relationship between price and distance from CBD
+new_df.plot.scatter(x = "Price", y = "Distance", c = "blue")
+plt.title('Price VS Distance')
+plt.xlabel('Price')
+plt.ylabel('Distance from CBD')
 
 # 4. Perform any additional steps (e.g., parsing dates, creating additional columns, merging multiple datasets, etc.). 
 # Checking data type
