@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # 1. Load the dataset into a data frame using Pandas.
 #read the dataframe
@@ -7,7 +9,7 @@ df = pd.read_csv("melb_data.csv")
 
 # 2. Explore the number of rows and columns, ranges of values, etc.# Specify the column name
 # Display the dataframe and numbers of rows and columns
-df 
+df
 
 # Explore the new values for numeric columns
 # Specify the column name
@@ -74,6 +76,7 @@ plt.ylabel('Landsize')
 #3. Apply data wrangling techniques that you have learnt to handle missing, incorrect and invalid data.
 #check missing value
 print(df.isna().sum())
+print()
 
 #drop the columns with more than 20% missing values 
 missing_percent = df.isnull().mean() * 100
@@ -81,7 +84,8 @@ new_df = df.drop(columns=missing_percent[missing_percent > 20].index)
 
 # Checking zero values for Landsize column
 zero_landsize_rows = new_df[new_df['Landsize'] == 0]
-display(zero_landsize_rows)
+print(zero_landsize_rows)
+print()
 
 # Replace zero value with NaN
 new_df['Landsize'] = new_df['Landsize'].replace(0, np.nan)
@@ -149,29 +153,35 @@ plt.ylabel('Distance from CBD')
 # 4. Perform any additional steps (e.g., parsing dates, creating additional columns, merging multiple datasets, etc.). 
 # Checking data type
 new_df.info()
+print()
 
 # Convert the 'Date' column to datetime format
 new_df['Date']= pd.to_datetime(new_df['Date'], format='%d/%m/%Y')
 new_df.info()
+print()
 
 # Combining location related columns
 new_df['FullAddress'] = new_df['Address'] + ', ' + new_df['Postcode'].astype(str) + ', ' + new_df['CouncilArea'] + ', ' + new_df['Regionname']
 new_df
+print()
 
 # Create a new dataset combining regionname and rooms with their average price
 sub_data1 = new_df.groupby(['Regionname', 'Rooms'], as_index=False).agg({'Price': 'mean'})
 sub_data1.rename(columns={'Price': 'AveragePrice'}, inplace=True)
 sub_data1['AveragePrice'] = sub_data1['AveragePrice'].round(2)
 sub_data1
+print()
 
 # Create a new dataset combining housing type and number of rooms with their average price
 sub_data2 = new_df.groupby(['Type', 'Rooms'], as_index=False).agg({'Price': 'mean'})
 sub_data2.rename(columns={'Price': 'AveragePrice'}, inplace=True)
 sub_data2['AveragePrice'] = sub_data1['AveragePrice'].round(2)
 sub_data2
+print()
 
 # Creating new column to categorized price
 bins = [0, 650000, 1075000, 1330000, 2350000, float('inf')]  
 labels = ['Economy', 'Affordable', 'Premium', 'Luxury', 'Ultra-Luxury']
 new_df['PriceCategories'] = pd.cut(new_df['Price'], bins=bins, labels=labels, right=False)
 new_df
+print()
