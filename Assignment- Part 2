@@ -1,0 +1,224 @@
+!pip install mlxtend
+
+#import all the modules and data
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+import warnings
+warnings.filterwarnings("ignore")
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import accuracy_score as acc
+from mlxtend.feature_selection import SequentialFeatureSelector as sfs
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from mlxtend.feature_selection import SequentialFeatureSelector 
+from sklearn.feature_selection import RFECV
+from sklearn.linear_model import LassoCV
+
+# Since the original data has no header, we add in using data.columns
+data = pd.read_csv('wdbc.data', sep=",", header=None)
+data.columns = [
+                  "ID", 
+                  "Diagnosis", 
+                  "radius1", 
+                  "texture1", 
+                  "perimeter1", 
+                  "area1", 
+                  "smoothness1", 
+                  "compactness1", 
+                  "concavity1", 
+                  "concave_points1", 
+                  "symmetry1", 
+                  "fractal_dimension1", 
+                  "radius2", 
+                  "texture2", 
+                  "perimeter2", 
+                  "area2", 
+                  "smoothness2", 
+                  "compactness2", 
+                  "concavity2", 
+                  "concave_points2", 
+                  "symmetry2", 
+                  "fractal_dimension2", 
+                  "radius3", 
+                  "texture3", 
+                  "perimeter3", 
+                  "area3", 
+                  "smoothness3", 
+                  "compactness3", 
+                  "concavity3", 
+                  "concave_points3", 
+                  "symmetry3", 
+                  "fractal_dimension3"
+              ]
+
+columns = [
+            "radius1", 
+            "texture1", 
+            "perimeter1", 
+            "area1", 
+            "smoothness1", 
+            "compactness1", 
+            "concavity1", 
+            "concave_points1", 
+            "symmetry1", 
+            "fractal_dimension1", 
+            "radius2", 
+            "texture2", 
+            "perimeter2", 
+            "area2", 
+            "smoothness2", 
+            "compactness2", 
+            "concavity2", 
+            "concave_points2", 
+             "symmetry2", 
+            "fractal_dimension2", 
+            "radius3", 
+            "texture3", 
+            "perimeter3", 
+            "area3", 
+            "smoothness3", 
+            "compactness3", 
+            "concavity3", 
+            "concave_points3", 
+            "symmetry3", 
+            "fractal_dimension3"
+         ]
+
+for column in columns:
+     data[column] = data[column].fillna(data[column].median()) 
+
+print(data.isna().sum())
+
+# Display first few rows of data
+print (data.head())
+
+data.describe
+
+# 1. Apply a forward selection by using linear regression, set k_features = 4. Record the selected features.
+
+print("Wrapper Method (Forward Selection)")
+
+# Encode Diagnosis (M for malignant = 1 and B for benign = 0)
+label_encoder = LabelEncoder()
+data['Diagnosis'] = label_encoder.fit_transform(data['Diagnosis'])
+
+# Separate features, X and target, Y
+x = data.drop(columns = ['ID', 'Diagnosis'])
+y = data['Diagnosis']
+
+# Initialize Linear Regression Model
+LR = LinearRegression()
+
+# Split data into training and testing data
+X_train, X_test, Y_train, Y_test = train_test_split(x, y, test_size = 0.3, random_state = 0)
+
+# Apply forward selection with k_features = 4 using Linear Regression
+step_forward = sfs(LR, k_features = 4, forward = True, floating = False, 
+                   scoring = 'r2', verbose = 2, cv = 5)
+
+# Fit forward selection to training data
+step_forward = step_forward.fit(X_train, Y_train)
+print("Selected features (Linear Regression Model): ", list(step_forward.k_feature_idx_))
+print("Selected features (Linear Regression Model): ", x.columns[list(step_forward.k_feature_idx_)])
+
+# ---Optional---
+# Use RandomForestRegressor for feature selection
+rf = RandomForestRegressor(random_state = 0)
+feature_selector = SequentialFeatureSelector(rf, k_features = 4, forward = True, floating = False, 
+                                             scoring = 'r2', verbose = 2, cv = 5)
+
+# Fit forward selection to training data
+features = feature_selector.fit(X_train, Y_train)
+print("Selected features (Random Forest Model): ", list(features.k_feature_idx_))
+print("Selected features (Random Forest Model): ", x.columns[list(features.k_feature_idx_)])
+
+# Fit RandomForest to get feature importances
+rf.fit(X_train, Y_train)
+
+# Create a list of feature names and their importance
+f_i = list(zip(x.columns,rf.feature_importances_))
+
+# Sort the features by importance
+f_i.sort(key = lambda x : x[1])
+
+# Plot the feature importances
+plt.barh([x[0] for x in f_i],[x[1] for x in f_i])
+plt.xlabel('Feature Importance')
+plt.ylabel('Feature Name')
+plt.title('Feature Importance by Random Forest Model')
+
+plt.show()
+
+# 2. Apply a Filter method by using correlation. Select features with correlation > 0.5. Record the selected features.
+
+np.random.seed(123)
+
+# Display the first few rows of data
+print(data.head())
+
+# Drop ID and Diagnosis columns because it's not useful for correlation analysis
+data = data.drop(columns = ["ID"])
+print(data.head())
+print()
+
+# Calculate correlation matrix
+cor = data.corr()
+cor
+print()
+
+# Plot heatmap for correlation
+plt.figure(figsize = (28, 15))
+plt.title('Correlation Heatmap')
+sns.heatmap(cor, annot = True, cmap = 'coolwarm')
+print()
+
+# Set threshold for correlation and 
+# select features with correlation > 0.5 with the target variable (Diagnosis)
+threshold = 0.5
+
+# Get absolute correlations with target variable (Diagnosis)
+s = abs(cor["Diagnosis"])
+
+# Select features with correlation above or greater than the threshold (> 0.5)
+selectedFeature = s[s > threshold].drop("Diagnosis")
+print("Selected features with correlation > 0.5: ")
+print(selectedFeature)
+
+# 3.  Apply an embedded method by using Lasso Regression. Record the selected features.
+
+# Define feature variables, x and target variable. y
+x = data.drop(columns=['ID', 'Diagnosis'])
+y = data['Diagnosis']
+
+# Implement Lasso Regression with Cross Validation
+reg = LassoCV(cv = 5)
+reg.fit(x,y)
+
+# Print the best alpha value found by LassoCV
+print("Best alpha using built-in LassoCV: %f" % reg.alpha_)
+
+# Print the score of the Lasso Model
+print("Best score using built-in LassoCV: %f" %reg.score(x,y))
+
+# Get the features' coefficients
+coef = pd.Series(reg.coef_, index=x.columns)
+
+print(coef)
+
+# Print the selected features and eliminated features
+print("Lasso picked " + str(sum(coef != 0)) + " variables and eliminated the other " + str(sum(coef == 0)) + " variables")
+
+# Sort the coefficients by importance (absolute value)
+imp_coef = coef.sort_values()
+
+# Plot the feature importances
+import matplotlib
+matplotlib.rcParams['figure.figsize'] = (8.0, 10.0)
+imp_coef.plot(kind = "barh")
+plt.title("Feature Importance Using Lasso Model")
+plt.show()
