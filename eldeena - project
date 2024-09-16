@@ -1,0 +1,197 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 1. Load the dataset into a data frame using Pandas.
+#read the dataframe
+df = pd.read_csv("melb_data.csv")
+
+# 2. Explore the number of rows and columns, ranges of values, etc.# Specify the column name
+# Display the dataframe and numbers of rows and columns
+print(df)
+
+# Explore the new values for numeric columns
+# Specify the column name
+columns = ['Price', 'Distance', 'Landsize','Propertycount']
+
+# Calculate the range of values for the specific column
+for column in columns:
+    column_range = df[column].max() - df[column].min()
+    
+    # Calculate and display the range
+    print(f"The minimum value of {column} is:", df[column].min())
+    print(f"The maximum value of {column} is:", df[column].max())
+    print(f"The range of {column} is:", column_range)
+    print()
+
+    # Calculate and diplay the mean, Q1, Q3, IQR, lower and Upper Limit 
+    print(f"The average value of {column} is:", df[column].mean())
+    
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    print(f"The lower quantile of {column} is:", Q1)
+    print(f"The upper quantile of {column} is:", Q3)
+    print(f"The interquantile of {column} is:", IQR)
+    
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+    
+    print(f"The lower limit of {column} is:", lower_limit)
+    print(f"The upper limit of {column} is:", upper_limit)
+    print()
+
+#Create Histogram for specific numeric columns
+columns = ['Price', 'Distance', 'Landsize','Propertycount']
+
+for column in columns:
+    plt.hist(df[column], bins=25, color='skyblue', edgecolor='black')
+    plt.xlabel([column])
+    plt.ylabel(f"Histogram of {column}")
+    plt.title(column)
+    plt.show()
+
+# Create histogram for all columns
+df.hist(figsize = (20,15)) 
+
+#Create boxplot for specific columns
+columns = ['Price', 'Distance', 'Landsize','Propertycount']
+
+for column in columns:
+    plt.figure()  # Create a new figure for each plot
+    boxplot = sns.boxplot(x=df[column])
+    boxplot.set_title(f"Box Plot of {column}")
+    boxplot.set_xlabel(column)
+    boxplot.set_ylabel('Count')
+    plt.show()
+
+# Scatter plot to show the relationship between price and landsize
+df.plot.scatter(x = "Price", y = "Landsize", c = "green")
+plt.title('Price VS Landsize')
+plt.xlabel('Price')
+plt.ylabel('Landsize')
+
+# Scatter plot to show the relationship between price and landsize
+df.plot.scatter(x = "Price", y = "Propertycount", c = "green")
+plt.title('Price VS Propertycount')
+plt.xlabel('Price')
+plt.ylabel('Propertycount')
+
+#3. Apply data wrangling techniques that you have learnt to handle missing, incorrect and invalid data.
+#check missing value
+print(df.isna().sum())
+print()
+
+# Drop columns with more than 20% missing values
+missing_percent = df.isnull().mean() * 100
+new_df = df.drop(columns=missing_percent[missing_percent > 20].index)
+
+# Fill missing values in 'Car' and 'CouncilArea'
+new_df['Car'] = new_df['Car'].fillna(0)
+new_df['CouncilArea'] = new_df['CouncilArea'].fillna('Missing')
+
+# Check for remaining missing values
+print(new_df.isna().sum())
+
+# Drop zero values for Landsize column since no property has no Landsize
+new_df = new_df[new_df['Landsize'] != 0]
+print(new_df)
+print()
+
+# Explore the new values for numeric columns
+# Specify the column name
+columns = ['Price', 'Distance', 'Landsize']
+
+# Calculate the range of new values for the specific column
+for column in columns:
+    column_range = new_df[column].max() - new_df[column].min()
+    
+    # Calculate and display the range
+    print(f"The minimum value of {column} is:", new_df[column].min())
+    print(f"The maximum value of {column} is:", new_df[column].max())
+    print(f"The range of {column} is:", column_range)
+    print()
+
+    # Calculate and diplay the mean, Q1, Q3, IQR, lower and Upper Limit 
+    print(f"The average value of {column} is:", new_df[column].mean())
+    
+    Q1 = new_df[column].quantile(0.25)
+    Q3 = new_df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    print(f"The lower quantile of {column} is:", Q1)
+    print(f"The upper quantile of {column} is:", Q3)
+    print(f"The interquantile of {column} is:", IQR)
+    
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+    
+    print(f"The lower limit of {column} is:", lower_limit)
+    print(f"The upper limit of {column} is:", upper_limit)
+    print()
+    
+    filtered_df = new_df[(new_df[column] > lower_limit) & (new_df[column] < upper_limit)]
+
+# Create new histogram for column landsize
+plt.hist(filtered_df['Landsize'], bins=25, color='orange', edgecolor='black')
+plt.xlabel('Landsize')
+plt.ylabel('Count')
+plt.title('Landsize Distribution')
+
+#Create boxplot for new dataframe
+plt.figure()  
+boxplot = sns.boxplot(x=filtered_df['Landsize'])
+boxplot.set_title('Box Plot of Landsize')
+boxplot.set_xlabel('Landsize')
+boxplot.set_ylabel('Count')
+plt.show()
+
+# New Scatter plot to show the relationship between price and landsize
+filtered_df.plot.scatter(x = "Price", y = "Landsize", c = "green")
+plt.title('Price VS Landsize')
+plt.xlabel('Price')
+plt.ylabel('Landsize')
+
+# New Scatter plot to show the relationship between price and distance from CBD
+filtered_df.plot.scatter(x = "Price", y = "Distance", c = "blue")
+plt.title('Price VS Distance')
+plt.xlabel('Price')
+plt.ylabel('Distance from CBD')
+
+# 4. Perform any additional steps (e.g., parsing dates, creating additional columns, merging multiple datasets, etc.). 
+# Checking data type
+filtered_df.info()
+print()
+
+# Convert the 'Date' column to datetime format
+filtered_df['Date']= pd.to_datetime(filtered_df['Date'], format='%d/%m/%Y')
+filtered_df.info()
+print()
+
+# Combining location related columns
+filtered_df['FullAddress'] = filtered_df['Address'] + ', ' + filtered_df['Postcode'].astype(str) + ', ' + filtered_df['CouncilArea'] + ', ' + filtered_df['Regionname']
+filtered_df
+print()
+
+# Create a new dataset combining regionname and rooms with their average price
+sub_data1 = filtered_df.groupby(['Regionname', 'Rooms'], as_index=False).agg({'Price': 'mean'})
+sub_data1.rename(columns={'Price': 'AveragePrice'}, inplace=True)
+sub_data1['AveragePrice'] = sub_data1['AveragePrice'].round(2)
+sub_data1
+print()
+
+# Create a new dataset combining housing type and number of rooms with their average price
+sub_data2 = filtered_df.groupby(['Type', 'Rooms'], as_index=False).agg({'Price': 'mean'})
+sub_data2.rename(columns={'Price': 'AveragePrice'}, inplace=True)
+sub_data2['AveragePrice'] = sub_data1['AveragePrice'].round(2)
+sub_data2
+print()
+
+# Creating new column to categorized price
+bins = [0, 650000, 1075000, 1330000, 2350000, float('inf')]  
+labels = ['Economy', 'Affordable', 'Premium', 'Luxury', 'Ultra-Luxury']
+filtered_df['PriceCategories'] = pd.cut(filtered_df['Price'], bins=bins, labels=labels, right=False)
+filtered_df
+print()
