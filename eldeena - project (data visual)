@@ -1,0 +1,89 @@
+"""
+[Group_3]
+Group Members:
+
+1211111904 Eldeena Lim Huey Yinn
+1211109457 Do Wai Lung
+1221305730 Doris Heng
+1211108301 Kong Yi Xuan
+"""
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Filter the dataset by Data Wrangling
+melb_df = pd.read_csv('melb_data.csv')
+missing_percent = melb_df.isnull().mean() * 100
+new_df = melb_df.drop(columns=missing_percent[missing_percent > 20].index)
+new_df['Car'] = new_df['Car'].fillna(0)
+new_df['CouncilArea'] = new_df['CouncilArea'].fillna('Missing')
+new_df = new_df[new_df['Landsize'] != 0]
+
+columns = ['Price', 'Distance', 'Landsize', 'Propertycount']
+filt_df = new_df.copy()
+
+for column in columns:
+    Q1 = filt_df[column].quantile(0.25)
+    Q3 = filt_df[column].quantile(0.75)  
+    IQR = Q3 - Q1
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+    filt_df = filt_df[(filt_df[column] > lower_limit) & (filt_df[column] < upper_limit)]
+
+
+filt_df['Date']= pd.to_datetime(filt_df['Date'],errors='coerce', format='%d/%m/%Y')
+filt_df = filt_df[filt_df['Date'].notnull()]
+# Obtain 'Month' from Date column 
+filt_df['Month'] = filt_df['Date'].dt.month
+
+# Histogram Distribution of Properties Listed in Melbourne according to Month
+Time = plt.figure(figsize=(12, 5))
+Time = plt.subplot(1, 2, 1)
+Time.hist(filt_df['Month'], bins=12 )
+Time.set_xticks(range(1, 13))
+Time.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+Time.set_title('Month Property was Listed')
+Time.set_xlabel('Month')
+Time.set_ylabel('Frequency')
+plt.show()
+
+#Scatterplots for Landsize, Rooms, Bathroom, Bedroom VS Price
+plt.figure(figsize = (12, 8))
+sns.scatterplot(x = filt_df['Landsize'], y = filt_df['Price'], s = 5, c = 'blue')
+plt.title('Scatter Plot: Landsize vs Price')
+plt.xlabel('Landsize')
+plt.ylabel('Price')
+plt.show()
+
+plt.figure(figsize = (12, 8))
+sns.scatterplot(x = filt_df['Rooms'], y = filt_df['Price'], s = 5, c = 'black')
+plt.title('Scatter Plot: Rooms vs Price')
+plt.xlabel('Rooms')
+plt.ylabel('Price')
+plt.show()
+
+plt.figure(figsize = (12, 8))
+sns.scatterplot(x = filt_df['Bedroom2'], y = filt_df['Price'], s = 5, c = 'red')
+plt.title('Scatter Plot: Bedroom2 vs Price')
+plt.xlabel('Bedroom2')
+plt.ylabel('Price')
+plt.show()
+
+plt.figure(figsize = (12, 8))
+sns.scatterplot(x = filt_df['Bathroom'], y = filt_df['Price'], s = 5, c = 'green')
+plt.title('Scatter Plot: Bathroom vs Price')
+plt.xlabel('Bathroom')
+plt.ylabel('Price')
+plt.show()
+
+# Barchart of Average Price of Grouped Regions, X-axis = Region, Y-axis = Average Price
+avgregion_price = filt_df.groupby('Regionname')['Price'].mean().reset_index()
+
+plt.figure(figsize=(12, 8))
+sns.barplot(x='Regionname', y='Price', data=avgregion_price)
+plt.title('Average Listing Prices Across Regions')
+plt.xlabel('Region')
+plt.ylabel('Average Price')
+plt.xticks(rotation=45)
+plt.show()
