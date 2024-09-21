@@ -127,3 +127,44 @@ plt.xlabel('Region')
 plt.ylabel('Average Price')
 plt.xticks(rotation=45)
 plt.show()
+
+### Scatterplot of Propertycount per Region and Average Price
+# Group by region name and calculate the average price and total property count
+regions_stats = filt_df.groupby('Regionname').agg({'Price': 'mean','Propertycount': 'sum'}).reset_index()
+
+print(regions_stats)
+print()
+
+# Plot the scatterplot of Total Property Count by Region and Average Price
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x = 'Propertycount', y = 'Price', data = regions_stats, hue = 'Regionname', style = 'Regionname', s = 100)
+plt.title('Scatterplot: Total Property Count by Region vs Average Price')
+plt.xlabel('Total Property Count (units)')
+plt.ylabel('Average Price (dollars)')
+plt.legend(title='Region')
+plt.grid(True)
+plt.show()
+"""
+The scatterplot depicting Total Property Count by Region against Average Price reveals an absence of a consistent correlation between the total property count in a region and the average price. 
+The x-axis denotes the total property count by region, and the y-axis indicates the average price. Every point on the scatterplot signifies an area, which are differentiated by distinct colours and styles for enhanced clarity. 
+Regions like Northern Metropolitan has the highest total property count; yet, the average price in this area is very reasonable relative to other regions. Conversely, Southern Metropolitan, with fewer homes than Northern Metropolitan, exhibits the highest average price. 
+This analysis indicates that an increased number of properties in a region does not inherently result in elevated pricing. Additional factors such as proximity to amenities and economic conditions likely exert a more substantial influence on home values. 
+Consequently, it can be inferred that the link between property quantity and price is intricate, with no apparent direct correlation discernible from the data.
+"""
+
+### Scatterplot of Distance from City Centre(CBD) and Listing Prices
+plt.figure(figsize=(10,6))
+plt.scatter(filt_df['Distance'], filt_df['Price'], alpha = 0.5, color = 'blue')
+plt.title('Scatterplot: Distance from City Center vs Price')
+plt.xlabel('Distance from CBD (km)')
+plt.ylabel('Price (dollars)')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+"""
+From the scatterplot showing the relationship between Distance from the City Center and Price, we observe a clear trend, which is as the distance from the city center increases, the property price tends to decrease. 
+The x-axis represents the distance from Melbourne's central business district (CBD), and the y-axis represents the listing price. The plot reveals that properties located within 5-10 km of the CBD generally command the highest prices, reflecting the desirability of urban proximity. 
+As distance from the CBD increases, prices gradually decrease, with the majority of properties farther than 10 km from the city center having lower listing prices. 
+However, some properties located further from the CBD still have relatively high prices, which could be attributed to premium suburbs or areas with unique amenities or desirable features. 
+In conclusion, the analysis shows that distance from the city center is a significant factor affecting property prices, with properties closer to the city center tending to have higher prices, while those farther away generally have lower listing prices.
+"""
