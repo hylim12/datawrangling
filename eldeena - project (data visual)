@@ -117,6 +117,15 @@ plt.xlabel('Bathroom')
 plt.ylabel('Price')
 plt.show()
 
+"""
+Based on the Landsize VS Price scatterplot, the plot has a large spread of data points signifiying variance in Price for different land sizes.
+The data points are widely scattered with no clear trend, hence no clear linear relationship between Landsize and Price.
+There is a higher concentration of data points between landsizes of 100 to 600 meaning more data samples in that range.
+
+Based on the Rooms VS Price scatterplot, the data appears heavily concentrated around certain room counts such as 2, 4 and 6 rooms.
+The relationship between the number of rooms and price has no trend but the price tends to increase with more rooms though the data is spread out.
+Prices also range widely with some listings reaching up to 2.5 million.
+"""
 ### Barchart of Average Price of Grouped Regions, X-axis = Region, Y-axis = Average Price
 avgregion_price = filt_df.groupby('Regionname')['Price'].mean().reset_index()
 
